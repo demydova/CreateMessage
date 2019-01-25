@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="GREETING" name="BuildManagement" basedir=".">
+	<description> Build file for project "CreateMessage"</description>
+	<target name="GREETING">
+		<echo>Start building of project "Create message"</echo>
+	</target>
+
+	<!-- set main properties -->
+	<property name="SRC" location="." />
+	<property name="BUILD" location="output" />
+	<property name="JARBUILD" location="build/jar" />
+	<property name="JAVADOC" location="javadoc" />
+	<property name="JUNIT"
+		location="/Users/annademydova/.p2/pool/plugins/org.junit_4.12.0.v201504281640/junit.jar" />
+	<property name="HAMCREST"
+		location="/Users/annademydova/.p2/pool/plugins/org.hamcrest.core_1.3.0.v201303031735.jar" />
+
+	<target name="INIT" depends="CLEAN">
+		<!-- create directory for *.class files -->
+		<mkdir dir="${BUILD}" />
+		<!-- create directory for *.jar files -->
+		<mkdir dir="${JARBUILD}" />
+		<!-- create directory documentation -->
+		<mkdir dir="${JAVADOC}" />
+	</target>
+
+	<!-- target to delete all the created directories -->
+	<target name="CLEAN">
+		<delete dir="${BUILD}" />
+		<delete dir="${JARBUILD}" />
+		<delete dir="${JAVADOC}" />
+	</target>
+
+	<!-- target to compile a program, depends from init. Files from ${SRC} will 
+		be compiled and placed to ${BUILD} -->
+	<target name="COMPILE" depends="INIT">
+		<javac includeantruntime="false" srcdir="${SRC}" destdir="${BUILD}"
+			classpath="${JUNIT}" />
+	</target>
+
+	<!-- target to run the program, depends from compile -->
+	<target name="RUN" depends="COMPILE">
+		<java classname="CreateMessage">
+			<classpath path="${BUILD}" />
+		</java>
+	</target>
+
+	<!-- target to run junit test, depends from compile -->
+	<target name="RUNJUNIT" depends="COMPILE">
+		<junit printsummary="on">
+			<formatter type="plain" usefile="false" />
+			<test name="CreateMessageTest" />
+			<classpath>
+				<pathelement location="${JUNIT}" />
+				<pathelement location="${HAMCREST}" />
+				<pathelement location="${BUILD}" />
+			</classpath>
+		</junit>
+	</target>
+
+	<!-- target to create jar file -->
+	<target name="JAR">
+		<jar destfile="${JARBUILD}/CreateMessage.jar" basedir="${BUILD}">
+			<manifest>
+				<attribute name="Main-Class" value="oata.createmessage" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- target to create java docs -->
+	<target name="DOC" depends="INIT" description="generate documentation">
+		<javadoc destdir="${JAVADOC}">
+			<fileset dir="${SRC}" />
+		</javadoc>
+	</target>
+
+</project>
